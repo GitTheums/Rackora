@@ -1,6 +1,6 @@
 # Rackora
 <p align="center">
-  <img alt="Rackora" src="https://img.shields.io/badge/license-MIT-blue (https://imgur.com/a/dY5Dng3)">
+  <img alt="Rackora" src="https://imgur.com/a/dY5Dng3">
 </p>
 
 
