@@ -1,6 +1,6 @@
 # Rackora
 <p align="center">
-  <img src="https://imgur.com/a/dY5Dng3">
+  <img src="https://i.imgur.com/i4kVsKP.png" alt="Rackora" width="800">
 </p>
 
 
