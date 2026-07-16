@@ -1,0 +1,9 @@
+{
+  "extends": "@rackora/config/typescript/node.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
+}

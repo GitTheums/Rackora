@@ -1,0 +1,26 @@
+{
+  "name": "@rackora/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared TypeScript and ESLint configuration for Rackora",
+  "files": [
+    "typescript",
+    "eslint"
+  ],
+  "exports": {
+    "./typescript/base.json": "./typescript/base.json",
+    "./typescript/react.json": "./typescript/react.json",
+    "./typescript/node.json": "./typescript/node.json",
+    "./eslint/base": "./eslint/base.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "eslint": "^9.29.0",
+    "typescript-eslint": "^8.34.1"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0",
+    "typescript": "^5.0.0"
+  }
+}

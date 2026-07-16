@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --color-ink: #0c1219;
+  --color-ink-muted: #5a6572;
+  --color-surface: #f3f0ea;
+  --color-accent: #1f6b4f;
+  --color-accent-soft: #d8ebe2;
+  --color-line: #d4cfc4;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background:
+      radial-gradient(ellipse 90% 60% at 10% -10%, #d8ebe2 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 100% 0%, #e8dfd0 0%, transparent 50%),
+      linear-gradient(180deg, #f7f4ef 0%, var(--color-surface) 45%, #ebe6dc 100%);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.7s ease-out both;
+}
+
+.animate-rise-delay {
+  animation: rise 0.7s ease-out 0.12s both;
+}
+
+.animate-rise-delay-2 {
+  animation: rise 0.7s ease-out 0.24s both;
+}
+
+.animate-drift {
+  animation: drift 4s ease-in-out infinite alternate;
+}

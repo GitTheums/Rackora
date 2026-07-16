@@ -1,0 +1,11 @@
+$ vitest run
+
+ RUN  v3.2.7 /home/rackora/projects/rackora/apps/server
+
+ ✓ src/index.test.ts (1 test) 57ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  07:18:54
+   Duration  525ms (transform 89ms, setup 0ms, collect 174ms, tests 57ms, environment 0ms, prepare 100ms)
+
