@@ -3,3 +3,5 @@ packages:
   - "packages/*"
 allowBuilds:
   esbuild: true
+  "@node-rs/argon2": true
+  better-sqlite3: false

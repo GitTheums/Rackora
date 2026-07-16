@@ -2,10 +2,10 @@ $ vitest run
 
  RUN  v3.2.7 /home/rackora/projects/rackora/apps/web
 
- ✓ src/App.test.tsx (1 test) 56ms
+ ✓ src/App.test.tsx (1 test) 61ms
 
  Test Files  1 passed (1)
       Tests  1 passed (1)
-   Start at  07:18:54
-   Duration  900ms (transform 58ms, setup 67ms, collect 157ms, tests 56ms, environment 369ms, prepare 62ms)
+   Start at  07:53:07
+   Duration  1.11s (transform 121ms, setup 48ms, collect 163ms, tests 61ms, environment 526ms, prepare 113ms)
 

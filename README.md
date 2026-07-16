@@ -25,9 +25,19 @@ pnpm dev
 | Service | URL |
 |---|---|
 | Web (Vite) | http://localhost:5173 |
-| API (Fastify) | http://localhost:7575 (`GET /health`) |
+| API (Fastify) | http://localhost:7575 (`GET /health`, `/api/*`) |
+
+Generate a master encryption key before starting the server:
+
+```bash
+openssl rand -hex 32
+```
+
+Set `MASTER_ENCRYPTION_KEY` in `.env` to that value. The server refuses to start without a valid 32-byte key.
 
 The Vite dev server listens on `0.0.0.0:5173`, so you can open the frontend from another device on your LAN at `http://<server-ip>:5173`. API requests from the dev server are proxied to `http://127.0.0.1:7575`.
+
+On first launch, open `/setup` to create the admin account. Afterwards use `/login`.
 
 Override the API port with the `PORT` environment variable (default `7575`).
 

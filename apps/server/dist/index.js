@@ -1,14 +1,53 @@
+import Fastify, {} from "fastify";
+import cookie from "@fastify/cookie";
+import rateLimit from "@fastify/rate-limit";
+import fastifyStatic from "@fastify/static";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import Fastify, {} from "fastify";
-import fastifyStatic from "@fastify/static";
 import { RACKORA_VERSION, } from "@rackora/shared";
+import { loadConfig } from "./config/env.js";
+import { loadEnvironment } from "./config/load-env.js";
+import { createLoggerOptions } from "./config/logger.js";
+import { openDatabase } from "./db/client.js";
+import { runMigrations } from "./db/migrate.js";
+import rackoraPlugin, {} from "./plugins/rackora.js";
+import { registerAuthRoutes } from "./routes/auth.js";
+import { registerSetupRoutes } from "./routes/setup.js";
+import { EncryptionService } from "./services/encryption.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export function createApp(options = {}) {
+export async function createApp(options = {}) {
+    const config = options.deps?.config ?? loadConfig();
+    const opened = options.deps?.db
+        ? {
+            db: options.deps.db,
+            client: null,
+            closeDatabase: () => undefined,
+        }
+        : await openDatabase(config.databasePath).then((result) => ({
+            db: result.db,
+            client: result.client,
+            closeDatabase: result.close,
+        }));
+    const encryption = options.deps?.encryption ??
+        new EncryptionService(config.masterEncryptionKey);
+    if (!options.skipMigrations) {
+        await runMigrations(opened.db);
+    }
     const app = Fastify({
-        logger: false,
-        ...options,
+        logger: options.logger === false
+            ? false
+            : (options.logger ?? createLoggerOptions(config.logLevel)),
+        trustProxy: config.appUrl.startsWith("https://"),
+    });
+    await app.register(cookie);
+    await app.register(rateLimit, {
+        global: false,
+    });
+    await app.register(rackoraPlugin, {
+        db: opened.db,
+        config,
+        encryption,
     });
     app.get("/health", async () => {
         return {
@@ -18,7 +57,19 @@ export function createApp(options = {}) {
             timestamp: new Date().toISOString(),
         };
     });
-    return app;
+    await registerSetupRoutes(app);
+    await registerAuthRoutes(app);
+    if (options.serveStatic) {
+        await registerProductionStatic(app);
+    }
+    return {
+        app,
+        db: opened.db,
+        client: opened.client,
+        closeDatabase: opened.closeDatabase,
+        config,
+        encryption,
+    };
 }
 export async function registerProductionStatic(app) {
     const webDist = path.resolve(__dirname, "../../web/dist");
@@ -36,16 +87,30 @@ export async function registerProductionStatic(app) {
     return true;
 }
 async function main() {
-    const isProduction = process.env.NODE_ENV === "production";
-    const app = createApp({
-        logger: true,
-    });
-    const port = Number(process.env.PORT ?? 7575);
-    const host = process.env.HOST ?? "0.0.0.0";
-    if (isProduction) {
-        await registerProductionStatic(app);
+    loadEnvironment();
+    let config;
+    try {
+        config = loadConfig();
     }
-    await app.listen({ port, host });
+    catch (error) {
+        console.error(error instanceof Error ? error.message : "Invalid server configuration");
+        process.exit(1);
+    }
+    const isProduction = config.nodeEnv === "production";
+    const { app, closeDatabase } = await createApp({
+        serveStatic: isProduction,
+    });
+    const shutdown = async () => {
+        await app.close();
+        closeDatabase();
+    };
+    process.on("SIGINT", () => {
+        void shutdown();
+    });
+    process.on("SIGTERM", () => {
+        void shutdown();
+    });
+    await app.listen({ port: config.port, host: config.host });
 }
 const entry = process.argv[1];
 if (entry !== undefined &&

@@ -34,5 +34,122 @@ export declare const agentInfoSchema: z.ZodObject<{
 }>;
 export type AgentStatus = z.infer<typeof agentStatusSchema>;
 export type AgentInfo = z.infer<typeof agentInfoSchema>;
+export declare const userSchema: z.ZodObject<{
+    id: z.ZodString;
+    username: z.ZodString;
+    role: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    id: string;
+    username: string;
+    role: string;
+}, {
+    id: string;
+    username: string;
+    role: string;
+}>;
+export type User = z.infer<typeof userSchema>;
+export declare const setupStatusResponseSchema: z.ZodObject<{
+    setupRequired: z.ZodBoolean;
+    csrfToken: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    setupRequired: boolean;
+    csrfToken: string;
+}, {
+    setupRequired: boolean;
+    csrfToken: string;
+}>;
+export type SetupStatusResponse = z.infer<typeof setupStatusResponseSchema>;
+export declare const setupRequestSchema: z.ZodObject<{
+    username: z.ZodString;
+    password: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    username: string;
+    password: string;
+}, {
+    username: string;
+    password: string;
+}>;
+export type SetupRequest = z.infer<typeof setupRequestSchema>;
+export declare const loginRequestSchema: z.ZodObject<{
+    username: z.ZodString;
+    password: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    username: string;
+    password: string;
+}, {
+    username: string;
+    password: string;
+}>;
+export type LoginRequest = z.infer<typeof loginRequestSchema>;
+export declare const userResponseSchema: z.ZodObject<{
+    user: z.ZodObject<{
+        id: z.ZodString;
+        username: z.ZodString;
+        role: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        id: string;
+        username: string;
+        role: string;
+    }, {
+        id: string;
+        username: string;
+        role: string;
+    }>;
+    csrfToken: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    csrfToken: string;
+    user: {
+        id: string;
+        username: string;
+        role: string;
+    };
+}, {
+    csrfToken: string;
+    user: {
+        id: string;
+        username: string;
+        role: string;
+    };
+}>;
+export type UserResponse = z.infer<typeof userResponseSchema>;
+export declare const authMeResponseSchema: z.ZodObject<{
+    user: z.ZodObject<{
+        id: z.ZodString;
+        username: z.ZodString;
+        role: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        id: string;
+        username: string;
+        role: string;
+    }, {
+        id: string;
+        username: string;
+        role: string;
+    }>;
+    csrfToken: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    csrfToken: string;
+    user: {
+        id: string;
+        username: string;
+        role: string;
+    };
+}, {
+    csrfToken: string;
+    user: {
+        id: string;
+        username: string;
+        role: string;
+    };
+}>;
+export type AuthMeResponse = z.infer<typeof authMeResponseSchema>;
+export declare const csrfResponseSchema: z.ZodObject<{
+    csrfToken: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    csrfToken: string;
+}, {
+    csrfToken: string;
+}>;
+export type CsrfResponse = z.infer<typeof csrfResponseSchema>;
 export declare const RACKORA_VERSION = "0.1.0";
 //# sourceMappingURL=index.d.ts.map

@@ -2,10 +2,12 @@ $ vitest run
 
  RUN  v3.2.7 /home/rackora/projects/rackora/apps/server
 
- ✓ src/index.test.ts (1 test) 57ms
+ ✓ src/auth.test.ts (8 tests) 270ms
+ ✓ src/index.test.ts (1 test) 55ms
+ ✓ src/config/env.test.ts (2 tests) 2ms
 
- Test Files  1 passed (1)
-      Tests  1 passed (1)
-   Start at  07:18:54
-   Duration  525ms (transform 89ms, setup 0ms, collect 174ms, tests 57ms, environment 0ms, prepare 100ms)
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  07:53:07
+   Duration  1.98s (transform 207ms, setup 0ms, collect 1.11s, tests 326ms, environment 0ms, prepare 187ms)
 

@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   agentInfoSchema,
+  authMeResponseSchema,
   healthResponseSchema,
+  loginRequestSchema,
   RACKORA_VERSION,
+  setupRequestSchema,
 } from "./index.js";
 
 describe("shared schemas", () => {
@@ -26,5 +29,24 @@ describe("shared schemas", () => {
     });
 
     expect(result.name).toBe("rackora-agent");
+  });
+
+  it("parses auth payloads", () => {
+    setupRequestSchema.parse({
+      username: "admin",
+      password: "secure-pass",
+    });
+    loginRequestSchema.parse({
+      username: "admin",
+      password: "secure-pass",
+    });
+    authMeResponseSchema.parse({
+      user: {
+        id: "550e8400-e29b-41d4-a716-446655440000",
+        username: "admin",
+        role: "admin",
+      },
+      csrfToken: "csrf-token",
+    });
   });
 });

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { healthResponseSchema } from "@rackora/shared";
-import { createApp } from "./index.js";
+import { createTestApp } from "./test/helpers.js";
 
 describe("GET /health", () => {
   it("returns a valid health payload", async () => {
-    const app = createApp();
+    const { app, cleanup } = await createTestApp();
 
     const response = await app.inject({
       method: "GET",
@@ -18,5 +18,6 @@ describe("GET /health", () => {
     expect(body.service).toBe("rackora-server");
 
     await app.close();
+    cleanup();
   });
 });
