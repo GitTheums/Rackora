@@ -1,10 +1,12 @@
 $ tsc -p tsconfig.json --noEmit && vite build
 vite v6.4.3 building for production...
 transforming...
-✓ 56 modules transformed.
+✓ 1850 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                   0.79 kB │ gzip:  0.44 kB
-dist/assets/index-D1xopVWe.css   12.25 kB │ gzip:  3.59 kB
-dist/assets/index-CPKywY-4.js   295.13 kB │ gzip: 88.64 kB
-✓ built in 999ms
+dist/index.html                   0.94 kB │ gzip:  0.48 kB
+dist/assets/index-bWO7eOJK.css   30.24 kB │ gzip:  6.48 kB
+dist/assets/charts-Bl0Fhi6k.js    0.40 kB │ gzip:  0.27 kB
+dist/assets/react-Cx-uRCNK.js    48.90 kB │ gzip: 17.30 kB
+dist/assets/index-DwWNKGdn.js   339.72 kB │ gzip: 97.07 kB
+✓ built in 2.13s

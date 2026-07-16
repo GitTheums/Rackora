@@ -47,7 +47,7 @@ export async function requireAuth(
   reply: FastifyReply,
 ): Promise<void> {
   if (!request.session) {
-    await reply.code(401).send({ error: "Unauthorized" });
+    return reply.code(401).send({ error: "Unauthorized" });
   }
 }
 
@@ -61,12 +61,12 @@ export async function requireCsrf(
 
   if (request.session) {
     if (!headerValue || headerValue !== request.session.csrfToken) {
-      await reply.code(403).send({ error: "Invalid CSRF token" });
+      return reply.code(403).send({ error: "Invalid CSRF token" });
     }
     return;
   }
 
   if (!headerValue || !anonymousCsrf || headerValue !== anonymousCsrf) {
-    await reply.code(403).send({ error: "Invalid CSRF token" });
+    return reply.code(403).send({ error: "Invalid CSRF token" });
   }
 }

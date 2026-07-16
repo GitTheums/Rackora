@@ -61,3 +61,10 @@ export async function readSecret(
 
   return encryption.decrypt(payload);
 }
+
+export async function deleteSecret(
+  db: RackoraDatabase,
+  key: string,
+): Promise<void> {
+  await db.delete(encryptedSecrets).where(eq(encryptedSecrets.key, key));
+}

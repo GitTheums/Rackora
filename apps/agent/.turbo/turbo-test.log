@@ -2,10 +2,10 @@ $ vitest run
 
  RUN  v3.2.7 /home/rackora/projects/rackora/apps/agent
 
- ✓ src/index.test.ts (2 tests) 11ms
+ ✓ src/index.test.ts (2 tests) 7ms
 
  Test Files  1 passed (1)
       Tests  2 passed (2)
-   Start at  07:53:07
-   Duration  419ms (transform 73ms, setup 0ms, collect 80ms, tests 11ms, environment 0ms, prepare 103ms)
+   Start at  09:31:21
+   Duration  464ms (transform 129ms, setup 0ms, collect 218ms, tests 7ms, environment 0ms, prepare 93ms)
 

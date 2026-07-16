@@ -2,10 +2,23 @@ import { describe, expect, it } from "vitest";
 import {
   agentInfoSchema,
   authMeResponseSchema,
+  checksSchema,
+  dockerSchema,
   healthResponseSchema,
+  infrastructureSchema,
+  integrationsSchema,
   loginRequestSchema,
+  mockChecks,
+  mockDocker,
+  mockInfrastructure,
+  mockIntegrations,
+  mockOverview,
+  mockUpdates,
+  overviewSchema,
+  proxmoxConfigSchema,
   RACKORA_VERSION,
   setupRequestSchema,
+  updatesSchema,
 } from "./index.js";
 
 describe("shared schemas", () => {
@@ -48,5 +61,31 @@ describe("shared schemas", () => {
       },
       csrfToken: "csrf-token",
     });
+  });
+
+  it("validates dashboard mock data against its schemas", () => {
+    expect(() => overviewSchema.parse(mockOverview)).not.toThrow();
+    expect(() => infrastructureSchema.parse(mockInfrastructure)).not.toThrow();
+    expect(() => dockerSchema.parse(mockDocker)).not.toThrow();
+    expect(() => checksSchema.parse(mockChecks)).not.toThrow();
+    expect(() => updatesSchema.parse(mockUpdates)).not.toThrow();
+    expect(() => integrationsSchema.parse(mockIntegrations)).not.toThrow();
+  });
+
+  it("parses a Proxmox API token config", () => {
+    const result = proxmoxConfigSchema.parse({
+      baseUrl: "https://192.168.1.10:8006",
+      tokenId: "root@pam!rackora",
+      tokenSecret: "secret-value",
+      tlsMode: "verify",
+    });
+    expect(result.tokenId).toBe("root@pam!rackora");
+    expect(() =>
+      proxmoxConfigSchema.parse({
+        baseUrl: "https://192.168.1.10:8006",
+        tokenId: "invalid",
+        tokenSecret: "secret-value",
+      }),
+    ).toThrow();
   });
 });

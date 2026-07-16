@@ -17,8 +17,12 @@ import { openDatabase, type RackoraDatabase } from "./db/client.js";
 import { runMigrations } from "./db/migrate.js";
 import rackoraPlugin, { type AppContext } from "./plugins/rackora.js";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { registerInfrastructureRoutes } from "./routes/infrastructure.js";
+import { registerIntegrationRoutes } from "./routes/integrations.js";
+import { registerOverviewRoutes } from "./routes/overview.js";
 import { registerSetupRoutes } from "./routes/setup.js";
 import { EncryptionService } from "./services/encryption.js";
+import { IntegrationScheduler } from "./services/scheduler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +31,8 @@ export type CreateAppOptions = {
   deps?: AppContext;
   skipMigrations?: boolean;
   serveStatic?: boolean;
+  /** Start the integration poll scheduler (default: true outside tests). */
+  enableScheduler?: boolean;
 };
 
 export type CreateAppResult = {
@@ -36,6 +42,7 @@ export type CreateAppResult = {
   closeDatabase: () => void;
   config: ServerConfig;
   encryption: EncryptionService;
+  scheduler: IntegrationScheduler | null;
 };
 
 export async function createApp(
@@ -92,9 +99,29 @@ export async function createApp(
 
   await registerSetupRoutes(app);
   await registerAuthRoutes(app);
+  await registerIntegrationRoutes(app);
+  await registerInfrastructureRoutes(app);
+  await registerOverviewRoutes(app);
 
   if (options.serveStatic) {
     await registerProductionStatic(app);
+  }
+
+  const enableScheduler =
+    options.enableScheduler ?? config.nodeEnv !== "test";
+
+  let scheduler: IntegrationScheduler | null = null;
+  if (enableScheduler) {
+    scheduler = new IntegrationScheduler({
+      db: opened.db,
+      encryption,
+      allowInsecureTls: config.allowInsecureTls,
+      logger: app.log,
+    });
+    scheduler.start();
+    app.addHook("onClose", async () => {
+      scheduler?.stop();
+    });
   }
 
   return {
@@ -104,6 +131,7 @@ export async function createApp(
     closeDatabase: opened.closeDatabase,
     config,
     encryption,
+    scheduler,
   };
 }
 

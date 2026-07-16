@@ -1,10 +1,21 @@
 import {
   authMeResponseSchema,
+  connectionTestResultSchema,
+  createProxmoxIntegrationSchema,
   csrfResponseSchema,
+  dashboardOverviewSchema,
+  infrastructureSchema,
+  integrationListResponseSchema,
+  integrationResponseSchema,
   setupRequestSchema,
   setupStatusResponseSchema,
   loginRequestSchema,
+  testProxmoxConnectionSchema,
+  updateProxmoxIntegrationSchema,
   userResponseSchema,
+  type CreateProxmoxIntegration,
+  type TestProxmoxConnection,
+  type UpdateProxmoxIntegration,
 } from "@rackora/shared";
 
 const JSON_HEADERS = {
@@ -170,6 +181,92 @@ export async function logout(csrfToken: string) {
       response.status,
     );
   }
+}
+
+export async function listIntegrations() {
+  return requestJson("/api/integrations", integrationListResponseSchema);
+}
+
+export async function testProxmoxConnection(
+  config: TestProxmoxConnection,
+  csrfToken: string,
+) {
+  const payload = testProxmoxConnectionSchema.parse(config);
+  return requestJson("/api/integrations/proxmox/test", connectionTestResultSchema, {
+    method: "POST",
+    headers: {
+      ...JSON_HEADERS,
+      "X-CSRF-Token": csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function createProxmoxIntegration(
+  input: CreateProxmoxIntegration,
+  csrfToken: string,
+) {
+  const payload = createProxmoxIntegrationSchema.parse(input);
+  return requestJson("/api/integrations/proxmox", integrationResponseSchema, {
+    method: "POST",
+    headers: {
+      ...JSON_HEADERS,
+      "X-CSRF-Token": csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateProxmoxIntegration(
+  id: string,
+  input: UpdateProxmoxIntegration,
+  csrfToken: string,
+) {
+  const payload = updateProxmoxIntegrationSchema.parse(input);
+  return requestJson(
+    `/api/integrations/${id}`,
+    integrationResponseSchema,
+    {
+      method: "PATCH",
+      headers: {
+        ...JSON_HEADERS,
+        "X-CSRF-Token": csrfToken,
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+}
+
+export async function deleteIntegration(id: string, csrfToken: string) {
+  let response: Response;
+  try {
+    response = await fetch(`/api/integrations/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "X-CSRF-Token": csrfToken,
+      },
+    });
+  } catch (error) {
+    throw new ApiError(formatDevError(error, "Delete failed"), 0);
+  }
+
+  if (!response.ok) {
+    throw new ApiError(
+      import.meta.env.DEV
+        ? `Delete failed (${response.status})`
+        : "Delete failed",
+      response.status,
+    );
+  }
+}
+
+export async function getInfrastructure() {
+  return requestJson("/api/infrastructure", infrastructureSchema);
+}
+
+export async function getOverview() {
+  return requestJson("/api/overview", dashboardOverviewSchema);
 }
 
 export { formatDevError };

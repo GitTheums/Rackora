@@ -13,8 +13,12 @@ import { openDatabase } from "./db/client.js";
 import { runMigrations } from "./db/migrate.js";
 import rackoraPlugin, {} from "./plugins/rackora.js";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { registerInfrastructureRoutes } from "./routes/infrastructure.js";
+import { registerIntegrationRoutes } from "./routes/integrations.js";
+import { registerOverviewRoutes } from "./routes/overview.js";
 import { registerSetupRoutes } from "./routes/setup.js";
 import { EncryptionService } from "./services/encryption.js";
+import { IntegrationScheduler } from "./services/scheduler.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export async function createApp(options = {}) {
     const config = options.deps?.config ?? loadConfig();
@@ -59,8 +63,25 @@ export async function createApp(options = {}) {
     });
     await registerSetupRoutes(app);
     await registerAuthRoutes(app);
+    await registerIntegrationRoutes(app);
+    await registerInfrastructureRoutes(app);
+    await registerOverviewRoutes(app);
     if (options.serveStatic) {
         await registerProductionStatic(app);
+    }
+    const enableScheduler = options.enableScheduler ?? config.nodeEnv !== "test";
+    let scheduler = null;
+    if (enableScheduler) {
+        scheduler = new IntegrationScheduler({
+            db: opened.db,
+            encryption,
+            allowInsecureTls: config.allowInsecureTls,
+            logger: app.log,
+        });
+        scheduler.start();
+        app.addHook("onClose", async () => {
+            scheduler?.stop();
+        });
     }
     return {
         app,
@@ -69,6 +90,7 @@ export async function createApp(options = {}) {
         closeDatabase: opened.closeDatabase,
         config,
         encryption,
+        scheduler,
     };
 }
 export async function registerProductionStatic(app) {

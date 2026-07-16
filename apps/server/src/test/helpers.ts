@@ -31,6 +31,7 @@ export async function createTestApp() {
   const { app } = await createApp({
     logger: false,
     skipMigrations: true,
+    enableScheduler: false,
     deps: {
       db,
       config,

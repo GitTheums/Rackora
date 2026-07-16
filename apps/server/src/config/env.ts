@@ -14,6 +14,8 @@ export type ServerConfig = {
   masterEncryptionKey: Buffer;
   cookieSecure: boolean;
   sessionTtlMs: number;
+  /** Global gate for per-integration insecure TLS. Default false. */
+  allowInsecureTls: boolean;
 };
 
 export function sanitizeEnvValue(raw: string | undefined): string | undefined {
@@ -80,6 +82,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
     masterEncryptionKey,
     cookieSecure,
     sessionTtlMs: Number(env.SESSION_TTL_MS ?? 7 * 24 * 60 * 60 * 1000),
+    allowInsecureTls: env.ALLOW_INSECURE_TLS === "true",
   };
 }
 
