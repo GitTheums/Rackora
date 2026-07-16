@@ -1,4 +1,8 @@
 # Rackora
+<p align="center">
+  <img src="https://i.imgur.com/i4kVsKP.png" alt="Rackora" width="800">
+</p>
+
 
 Self-hosted homelab monitoring dashboard.
 
