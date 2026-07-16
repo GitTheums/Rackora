@@ -1,5 +1,11 @@
 import { relations } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  integer,
+  real,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -66,6 +72,83 @@ export const snapshots = sqliteTable("snapshots", {
   errorMessage: text("error_message"),
 });
 
+export const enrollmentTokens = sqliteTable("enrollment_tokens", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  usedAt: integer("used_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const agents = sqliteTable("agents", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  /** Key into encrypted_secrets for the agent HMAC secret. */
+  secretKey: text("secret_key").notNull().unique(),
+  status: text("status").notNull().default("active"),
+  enrollmentTokenId: text("enrollment_token_id").references(
+    () => enrollmentTokens.id,
+    { onDelete: "set null" },
+  ),
+  lastSeenAt: integer("last_seen_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+  revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
+});
+
+export const agentNonces = sqliteTable(
+  "agent_nonces",
+  {
+    id: text("id").primaryKey(),
+    agentId: text("agent_id")
+      .notNull()
+      .references(() => agents.id, { onDelete: "cascade" }),
+    nonce: text("nonce").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => [
+    uniqueIndex("agent_nonces_agent_id_nonce_unique").on(
+      table.agentId,
+      table.nonce,
+    ),
+  ],
+);
+
+export const agentHeartbeats = sqliteTable("agent_heartbeats", {
+  id: text("id").primaryKey(),
+  agentId: text("agent_id")
+    .notNull()
+    .references(() => agents.id, { onDelete: "cascade" }),
+  receivedAt: integer("received_at", { mode: "timestamp_ms" }).notNull(),
+  status: text("status").notNull(),
+  payloadJson: text("payload_json"),
+});
+
+/** Latest telemetry snapshot per agent (upserted on each heartbeat). */
+export const agentTelemetryState = sqliteTable("agent_telemetry_state", {
+  agentId: text("agent_id")
+    .primaryKey()
+    .references(() => agents.id, { onDelete: "cascade" }),
+  schemaVersion: integer("schema_version").notNull(),
+  collectedAt: integer("collected_at", { mode: "timestamp_ms" }).notNull(),
+  status: text("status").notNull(),
+  payloadJson: text("payload_json").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+/** Time-series metric samples extracted from agent telemetry. */
+export const agentMetricSamples = sqliteTable("agent_metric_samples", {
+  id: text("id").primaryKey(),
+  agentId: text("agent_id")
+    .notNull()
+    .references(() => agents.id, { onDelete: "cascade" }),
+  collectedAt: integer("collected_at", { mode: "timestamp_ms" }).notNull(),
+  metricKey: text("metric_key").notNull(),
+  value: real("value").notNull(),
+  labelsJson: text("labels_json"),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
 }));
@@ -87,3 +170,61 @@ export const snapshotsRelations = relations(snapshots, ({ one }) => ({
     references: [integrations.id],
   }),
 }));
+
+export const enrollmentTokensRelations = relations(
+  enrollmentTokens,
+  ({ many }) => ({
+    agents: many(agents),
+  }),
+);
+
+export const agentsRelations = relations(agents, ({ one, many }) => ({
+  enrollmentToken: one(enrollmentTokens, {
+    fields: [agents.enrollmentTokenId],
+    references: [enrollmentTokens.id],
+  }),
+  nonces: many(agentNonces),
+  heartbeats: many(agentHeartbeats),
+  telemetryState: one(agentTelemetryState, {
+    fields: [agents.id],
+    references: [agentTelemetryState.agentId],
+  }),
+  metricSamples: many(agentMetricSamples),
+}));
+
+export const agentTelemetryStateRelations = relations(
+  agentTelemetryState,
+  ({ one }) => ({
+    agent: one(agents, {
+      fields: [agentTelemetryState.agentId],
+      references: [agents.id],
+    }),
+  }),
+);
+
+export const agentMetricSamplesRelations = relations(
+  agentMetricSamples,
+  ({ one }) => ({
+    agent: one(agents, {
+      fields: [agentMetricSamples.agentId],
+      references: [agents.id],
+    }),
+  }),
+);
+
+export const agentNoncesRelations = relations(agentNonces, ({ one }) => ({
+  agent: one(agents, {
+    fields: [agentNonces.agentId],
+    references: [agents.id],
+  }),
+}));
+
+export const agentHeartbeatsRelations = relations(
+  agentHeartbeats,
+  ({ one }) => ({
+    agent: one(agents, {
+      fields: [agentHeartbeats.agentId],
+      references: [agents.id],
+    }),
+  }),
+);

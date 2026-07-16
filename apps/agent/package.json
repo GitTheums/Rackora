@@ -16,7 +16,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@rackora/shared": "workspace:*"
+    "@rackora/shared": "workspace:*",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@rackora/config": "workspace:*",

@@ -1,9 +1,12 @@
 import { z } from "zod";
+export * from "./agents.js";
 export * from "./cpu.js";
 export * from "./dashboard.js";
 export * from "./dashboard-overview.js";
+export * from "./docker-view.js";
 export * from "./integrations.js";
 export * from "./mocks.js";
+export * from "./telemetry.js";
 export const healthStatusSchema = z.enum(["ok", "degraded", "error"]);
 export const healthResponseSchema = z.object({
     status: healthStatusSchema,

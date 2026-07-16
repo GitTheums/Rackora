@@ -16,13 +16,21 @@ import { createLoggerOptions } from "./config/logger.js";
 import { openDatabase, type RackoraDatabase } from "./db/client.js";
 import { runMigrations } from "./db/migrate.js";
 import rackoraPlugin, { type AppContext } from "./plugins/rackora.js";
+import { registerAgentRoutes } from "./routes/agents.js";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { registerDockerRoutes } from "./routes/docker.js";
 import { registerInfrastructureRoutes } from "./routes/infrastructure.js";
 import { registerIntegrationRoutes } from "./routes/integrations.js";
 import { registerOverviewRoutes } from "./routes/overview.js";
 import { registerSetupRoutes } from "./routes/setup.js";
 import { EncryptionService } from "./services/encryption.js";
 import { IntegrationScheduler } from "./services/scheduler.js";
+
+declare module "fastify" {
+  interface FastifyRequest {
+    rawBody?: string;
+  }
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -82,6 +90,25 @@ export async function createApp(
     global: false,
   });
 
+  app.removeContentTypeParser("application/json");
+  app.addContentTypeParser(
+    "application/json",
+    { parseAs: "string" },
+    (request, body, done) => {
+      const raw = typeof body === "string" ? body : "";
+      request.rawBody = raw;
+      if (raw.length === 0) {
+        done(null, undefined);
+        return;
+      }
+      try {
+        done(null, JSON.parse(raw) as unknown);
+      } catch (error) {
+        done(error as Error, undefined);
+      }
+    },
+  );
+
   await app.register(rackoraPlugin, {
     db: opened.db,
     config,
@@ -99,6 +126,8 @@ export async function createApp(
 
   await registerSetupRoutes(app);
   await registerAuthRoutes(app);
+  await registerAgentRoutes(app);
+  await registerDockerRoutes(app);
   await registerIntegrationRoutes(app);
   await registerInfrastructureRoutes(app);
   await registerOverviewRoutes(app);

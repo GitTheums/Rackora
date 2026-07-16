@@ -2,11 +2,12 @@ $ vitest run
 
  RUN  v3.2.7 /home/rackora/projects/rackora/packages/shared
 
- ✓ src/cpu.test.ts (10 tests) 5ms
- ✓ src/index.test.ts (5 tests) 13ms
+ ✓ src/telemetry.test.ts (5 tests) 15ms
+ ✓ src/index.test.ts (6 tests) 20ms
+ ✓ src/cpu.test.ts (10 tests) 7ms
 
- Test Files  2 passed (2)
-      Tests  15 passed (15)
-   Start at  09:31:21
-   Duration  818ms (transform 176ms, setup 0ms, collect 235ms, tests 17ms, environment 0ms, prepare 217ms)
+ Test Files  3 passed (3)
+      Tests  21 passed (21)
+   Start at  12:43:21
+   Duration  1.37s (transform 168ms, setup 0ms, collect 331ms, tests 42ms, environment 0ms, prepare 384ms)
 

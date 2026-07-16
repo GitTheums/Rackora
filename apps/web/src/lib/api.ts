@@ -1,9 +1,21 @@
 import {
+  agentDetailResponseSchema,
+  agentListResponseSchema,
+  agentResponseSchema,
   authMeResponseSchema,
   connectionTestResultSchema,
+  createEnrollmentTokenRequestSchema,
   createProxmoxIntegrationSchema,
   csrfResponseSchema,
   dashboardOverviewSchema,
+  dockerAgentListResponseSchema,
+  dockerContainerDetailResponseSchema,
+  dockerContainerListResponseSchema,
+  dockerFleetSummarySchema,
+  enrollmentTokenListResponseSchema,
+  enrollmentTokenResponseSchema,
+  hostDetailResponseSchema,
+  hostListResponseSchema,
   infrastructureSchema,
   integrationListResponseSchema,
   integrationResponseSchema,
@@ -13,6 +25,7 @@ import {
   testProxmoxConnectionSchema,
   updateProxmoxIntegrationSchema,
   userResponseSchema,
+  type CreateEnrollmentTokenInput,
   type CreateProxmoxIntegration,
   type TestProxmoxConnection,
   type UpdateProxmoxIntegration,
@@ -267,6 +280,81 @@ export async function getInfrastructure() {
 
 export async function getOverview() {
   return requestJson("/api/overview", dashboardOverviewSchema);
+}
+
+export async function listAgents() {
+  return requestJson("/api/agents", agentListResponseSchema);
+}
+
+export async function getAgent(agentId: string) {
+  return requestJson(`/api/agents/${agentId}`, agentDetailResponseSchema);
+}
+
+export async function listEnrollmentTokens(pendingOnly = false) {
+  const url = pendingOnly
+    ? "/api/agents/enrollment-tokens?status=pending"
+    : "/api/agents/enrollment-tokens";
+  return requestJson(url, enrollmentTokenListResponseSchema);
+}
+
+export async function createEnrollmentToken(
+  input: CreateEnrollmentTokenInput,
+  csrfToken: string,
+) {
+  const payload = createEnrollmentTokenRequestSchema.parse(input);
+  return requestJson(
+    "/api/agents/enrollment-tokens",
+    enrollmentTokenResponseSchema,
+    {
+      method: "POST",
+      headers: {
+        ...JSON_HEADERS,
+        "X-CSRF-Token": csrfToken,
+      },
+      body: JSON.stringify({
+        agentName: payload.agentName,
+        expiresAt: payload.expiresAt,
+      }),
+    },
+  );
+}
+
+export async function revokeAgent(agentId: string, csrfToken: string) {
+  return requestJson(`/api/agents/${agentId}/revoke`, agentResponseSchema, {
+    method: "POST",
+    headers: {
+      ...JSON_HEADERS,
+      "X-CSRF-Token": csrfToken,
+    },
+    body: JSON.stringify({}),
+  });
+}
+
+export async function getDockerSummary() {
+  return requestJson("/api/docker/summary", dockerFleetSummarySchema);
+}
+
+export async function listDockerAgents() {
+  return requestJson("/api/docker/agents", dockerAgentListResponseSchema);
+}
+
+export async function listDockerContainers() {
+  return requestJson("/api/docker/containers", dockerContainerListResponseSchema);
+}
+
+export async function getDockerContainer(agentId: string, containerId: string) {
+  return requestJson(
+    `/api/docker/containers/${agentId}/${containerId}`,
+    dockerContainerDetailResponseSchema,
+  );
+}
+
+export async function listHosts() {
+  return requestJson("/api/hosts", hostListResponseSchema);
+}
+
+export async function getHost(agentId: string) {
+  return requestJson(`/api/hosts/${agentId}`, hostDetailResponseSchema);
 }
 
 export { formatDevError };

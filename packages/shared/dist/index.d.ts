@@ -1,9 +1,12 @@
 import { z } from "zod";
+export * from "./agents.js";
 export * from "./cpu.js";
 export * from "./dashboard.js";
 export * from "./dashboard-overview.js";
+export * from "./docker-view.js";
 export * from "./integrations.js";
 export * from "./mocks.js";
+export * from "./telemetry.js";
 export declare const healthStatusSchema: z.ZodEnum<["ok", "degraded", "error"]>;
 export declare const healthResponseSchema: z.ZodObject<{
     status: z.ZodEnum<["ok", "degraded", "error"]>;
@@ -11,12 +14,12 @@ export declare const healthResponseSchema: z.ZodObject<{
     version: z.ZodString;
     timestamp: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    status: "degraded" | "error" | "ok";
+    status: "error" | "ok" | "degraded";
     version: string;
     service: "rackora-server";
     timestamp: string;
 }, {
-    status: "degraded" | "error" | "ok";
+    status: "error" | "ok" | "degraded";
     version: string;
     service: "rackora-server";
     timestamp: string;

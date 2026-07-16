@@ -5,6 +5,11 @@ import { type RackoraDatabase } from "./db/client.js";
 import { type AppContext } from "./plugins/rackora.js";
 import { EncryptionService } from "./services/encryption.js";
 import { IntegrationScheduler } from "./services/scheduler.js";
+declare module "fastify" {
+    interface FastifyRequest {
+        rawBody?: string;
+    }
+}
 export type CreateAppOptions = {
     logger?: FastifyServerOptions["logger"] | false;
     deps?: AppContext;

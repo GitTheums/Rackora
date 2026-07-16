@@ -1,0 +1,65 @@
+# Git / VCS
+.git
+.gitignore
+.gitattributes
+
+# Dependencies and build caches
+**/node_modules
+**/.pnpm-store
+**/.turbo
+**/.cache
+**/coverage
+**/*.tsbuildinfo
+
+# Local runtime data and secrets
+.env
+.env.*
+!**/.env.example
+**/.env
+**/.env.*
+**/credentials.json
+**/*.db
+**/*.db-*
+**/*.sqlite
+**/*.sqlite3
+
+# Host-built artifacts (compiled inside the image)
+**/dist
+
+# Agent compose local state
+deploy/compose/**/data
+**/data
+
+# IDE / OS
+.idea
+.vscode
+.cursor
+**/.DS_Store
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Frontend sources (only package.json is needed for lockfile resolution)
+apps/web/src
+apps/web/public
+apps/web/index.html
+apps/web/vite.config.ts
+apps/web/vitest.config.ts
+apps/web/eslint.config.js
+apps/web/tsconfig.json
+apps/web/src/**/*
+
+# Server sources (only package.json is needed for lockfile resolution)
+apps/server/src
+apps/server/drizzle
+apps/server/scripts
+apps/server/vitest.config.ts
+apps/server/eslint.config.js
+apps/server/tsconfig.json
+apps/server/drizzle.config.ts
+
+# Tests / fixtures
+**/*.test.ts
+**/*.test.tsx
+**/vitest.config.ts
+**/fixtures

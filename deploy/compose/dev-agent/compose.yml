@@ -1,0 +1,28 @@
+services:
+  rackora-agent:
+    build:
+      context: ../../..
+      dockerfile: apps/agent/Dockerfile
+      args:
+        # Host docker.sock group id (run: stat -c '%g' /var/run/docker.sock)
+        DOCKER_GID: ${DOCKER_GID:-996}
+    container_name: rackora-agent-dev
+    restart: unless-stopped
+    environment:
+      CORE_URL: ${CORE_URL:-http://host.docker.internal:7575}
+      ENROLLMENT_TOKEN: ${ENROLLMENT_TOKEN}
+      AGENT_NAME: ${AGENT_NAME:-rackora-dev}
+      AGENT_DATA_DIR: /data
+      DATA_DIR: /data
+      TELEMETRY_INTERVAL_SECONDS: ${TELEMETRY_INTERVAL_SECONDS:-30}
+      DOCKER_SOCKET: /var/run/docker.sock
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/host/root:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    stop_grace_period: 15s

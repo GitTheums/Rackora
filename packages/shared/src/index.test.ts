@@ -3,6 +3,7 @@ import {
   agentInfoSchema,
   authMeResponseSchema,
   checksSchema,
+  createEnrollmentTokenRequestSchema,
   dockerSchema,
   healthResponseSchema,
   infrastructureSchema,
@@ -70,6 +71,15 @@ describe("shared schemas", () => {
     expect(() => checksSchema.parse(mockChecks)).not.toThrow();
     expect(() => updatesSchema.parse(mockUpdates)).not.toThrow();
     expect(() => integrationsSchema.parse(mockIntegrations)).not.toThrow();
+  });
+
+  it("accepts enrollment token creation with agentName and expiresInSeconds", () => {
+    const result = createEnrollmentTokenRequestSchema.parse({
+      agentName: "host-a",
+      expiresInSeconds: 1800,
+    });
+    expect(result.name).toBe("host-a");
+    expect(result.expiresAt).toMatch(/^\d{4}-/);
   });
 
   it("parses a Proxmox API token config", () => {

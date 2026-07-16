@@ -48,7 +48,7 @@ export function formatUptime(seconds: number): string {
 }
 
 /**
- * Format an ISO timestamp as a relative time string ("5 min ago").
+ * Format an ISO timestamp as a relative time string ("5 min ago" / "in 5 min").
  * Accepts an optional "now" reference to keep tests deterministic.
  */
 export function formatRelativeTime(iso: string, now = Date.now()): string {
@@ -58,21 +58,24 @@ export function formatRelativeTime(iso: string, now = Date.now()): string {
   }
 
   const diffSeconds = Math.round((now - then) / 1000);
+  const absSeconds = Math.abs(diffSeconds);
 
-  if (diffSeconds < 45) {
+  if (absSeconds < 45) {
     return "just now";
   }
 
-  const minutes = Math.round(diffSeconds / 60);
+  const future = diffSeconds < 0;
+  const minutes = Math.round(absSeconds / 60);
   if (minutes < 60) {
-    return `${minutes} min ago`;
+    return future ? `in ${minutes} min` : `${minutes} min ago`;
   }
 
   const hours = Math.round(minutes / 60);
   if (hours < 24) {
-    return `${hours} hr ago`;
+    return future ? `in ${hours} hr` : `${hours} hr ago`;
   }
 
   const days = Math.round(hours / 24);
-  return `${days} day${days === 1 ? "" : "s"} ago`;
+  const dayLabel = `${days} day${days === 1 ? "" : "s"}`;
+  return future ? `in ${dayLabel}` : `${dayLabel} ago`;
 }

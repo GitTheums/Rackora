@@ -15,6 +15,20 @@
       "when": 1752656400000,
       "tag": "0001_integrations",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784199462145,
+      "tag": "0002_agents",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1784200000000,
+      "tag": "0003_agent_telemetry",
+      "breakpoints": true
     }
   ]
 }

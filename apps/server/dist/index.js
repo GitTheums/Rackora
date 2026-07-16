@@ -12,7 +12,9 @@ import { createLoggerOptions } from "./config/logger.js";
 import { openDatabase } from "./db/client.js";
 import { runMigrations } from "./db/migrate.js";
 import rackoraPlugin, {} from "./plugins/rackora.js";
+import { registerAgentRoutes } from "./routes/agents.js";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { registerDockerRoutes } from "./routes/docker.js";
 import { registerInfrastructureRoutes } from "./routes/infrastructure.js";
 import { registerIntegrationRoutes } from "./routes/integrations.js";
 import { registerOverviewRoutes } from "./routes/overview.js";
@@ -48,6 +50,21 @@ export async function createApp(options = {}) {
     await app.register(rateLimit, {
         global: false,
     });
+    app.removeContentTypeParser("application/json");
+    app.addContentTypeParser("application/json", { parseAs: "string" }, (request, body, done) => {
+        const raw = typeof body === "string" ? body : "";
+        request.rawBody = raw;
+        if (raw.length === 0) {
+            done(null, undefined);
+            return;
+        }
+        try {
+            done(null, JSON.parse(raw));
+        }
+        catch (error) {
+            done(error, undefined);
+        }
+    });
     await app.register(rackoraPlugin, {
         db: opened.db,
         config,
@@ -63,6 +80,8 @@ export async function createApp(options = {}) {
     });
     await registerSetupRoutes(app);
     await registerAuthRoutes(app);
+    await registerAgentRoutes(app);
+    await registerDockerRoutes(app);
     await registerIntegrationRoutes(app);
     await registerInfrastructureRoutes(app);
     await registerOverviewRoutes(app);

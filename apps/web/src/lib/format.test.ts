@@ -42,5 +42,11 @@ describe("format helpers", () => {
     expect(formatRelativeTime("2026-01-13T12:00:00.000Z", now)).toBe(
       "2 days ago",
     );
+    expect(formatRelativeTime("2026-01-15T12:30:00.000Z", now)).toBe(
+      "in 30 min",
+    );
+    expect(formatRelativeTime("2026-01-15T15:00:00.000Z", now)).toBe(
+      "in 3 hr",
+    );
   });
 });

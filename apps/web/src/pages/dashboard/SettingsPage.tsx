@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { AgentsSection } from "@/components/settings/agents-section";
 import { useTheme } from "@/components/theme/theme-context";
 
 function SettingRow({
@@ -99,6 +100,8 @@ export function SettingsPage() {
           </SettingRow>
         </CardContent>
       </Card>
+
+      <AgentsSection />
 
       <Card>
         <CardHeader>
